@@ -69,18 +69,46 @@
         </aside>
     </main>
 
-    <!-- Mobile Virtual Controls -->
-    <nav class="mobile-controls" aria-label="Kontrol Layar Sentuh Mobile">
-        <div class="dpad-container">
-            <button id="btnTouchLeft" class="touch-btn">◀ <span>Kiri</span></button>
-            <button id="btnTouchDown" class="touch-btn">▼ <span>Turun</span></button>
-            <button id="btnTouchRight" class="touch-btn">▶ <span>Kanan</span></button>
-            <button id="btnTouchHardDrop" class="touch-btn btn-harddrop">⤓ HARD DROP</button>
+    <!-- Mobile Cyber Arcade Gamepad -->
+    <nav class="mobile-controls" aria-label="Kontrol Gamepad Sentuh Mobile">
+        <!-- Left Thumb: Directional D-Pad -->
+        <div class="pad-cluster dpad-cluster">
+            <button id="btnTouchLeft" class="touch-btn btn-dpad btn-left" aria-label="Gerak Kiri">
+                <span class="btn-icon-glyph">◀</span>
+                <span class="btn-subtext">KIRI</span>
+            </button>
+            <button id="btnTouchDown" class="touch-btn btn-dpad btn-down" aria-label="Turun Cepat">
+                <span class="btn-icon-glyph">▼</span>
+                <span class="btn-subtext">TURUN</span>
+            </button>
+            <button id="btnTouchRight" class="touch-btn btn-dpad btn-right" aria-label="Gerak Kanan">
+                <span class="btn-icon-glyph">▶</span>
+                <span class="btn-subtext">KANAN</span>
+            </button>
         </div>
-        <div class="actions-container">
-            <button id="btnTouchRotateCCW" class="touch-btn">↺ <span>Putar Kiri</span></button>
-            <button id="btnTouchRotateCW" class="touch-btn">↻ <span>Putar Kanan</span></button>
-            <button id="btnTouchHold" class="touch-btn" style="grid-column: 1 / -1;">📥 <span>HOLD PIECE</span></button>
+
+        <!-- Center Quick Drop Bar -->
+        <div class="pad-cluster center-cluster">
+            <button id="btnTouchHardDrop" class="touch-btn btn-harddrop" aria-label="Hard Drop Langsung Kunci">
+                <span class="btn-icon-glyph">⚡ DROP</span>
+                <span class="btn-subtext">KUNCI</span>
+            </button>
+        </div>
+
+        <!-- Right Thumb: Action Cluster (Rotate & Hold) -->
+        <div class="pad-cluster action-cluster">
+            <button id="btnTouchHold" class="touch-btn btn-action btn-hold" aria-label="Hold / Tukar Simpanan Balok">
+                <span class="btn-icon-glyph">📥</span>
+                <span class="btn-subtext">HOLD</span>
+            </button>
+            <button id="btnTouchRotateCCW" class="touch-btn btn-action btn-rot-ccw" aria-label="Putar Berlawanan Jarum Jam">
+                <span class="btn-icon-glyph">↺</span>
+                <span class="btn-subtext">PUTAR L</span>
+            </button>
+            <button id="btnTouchRotateCW" class="touch-btn btn-action btn-rot-cw" aria-label="Putar Searah Jarum Jam">
+                <span class="btn-icon-glyph">↻</span>
+                <span class="btn-subtext">PUTAR R</span>
+            </button>
         </div>
     </nav>
 
