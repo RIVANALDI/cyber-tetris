@@ -804,6 +804,78 @@ class TetrisApp {
         }
     }
 
+    triggerHaptic(ms = 15) {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try {
+                navigator.vibrate(ms);
+            } catch (e) {}
+        }
+    }
+
+    initTouchGestures() {
+        if (!this.canvas) return;
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let isSwiping = false;
+
+        this.canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                touchStartTime = performance.now();
+                isSwiping = false;
+            }
+        }, { passive: true });
+
+        this.canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length !== 1 || this.game.isPaused || this.game.isGameOver || this.isCountingDown) return;
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - touchStartX;
+            const deltaY = touch.clientY - touchStartY;
+
+            const thresholdX = 24;
+            const thresholdY = 26;
+
+            if (Math.abs(deltaX) > thresholdX) {
+                isSwiping = true;
+                if (deltaX > 0) {
+                    if (this.game.moveRight()) this.audio.playMove();
+                } else {
+                    if (this.game.moveLeft()) this.audio.playMove();
+                }
+                this.triggerHaptic(10);
+                this.updateUI();
+                this.render();
+                touchStartX = touch.clientX;
+            } else if (deltaY > thresholdY) {
+                isSwiping = true;
+                if (this.game.softDrop()) this.audio.playSoftDrop();
+                this.triggerHaptic(8);
+                this.updateUI();
+                this.render();
+                touchStartY = touch.clientY;
+            }
+        }, { passive: true });
+
+        this.canvas.addEventListener('touchend', (e) => {
+            if (this.game.isPaused || this.game.isGameOver || this.isCountingDown) return;
+            const touchDuration = performance.now() - touchStartTime;
+
+            // Tap gesture on board -> Rotate Clockwise
+            if (!isSwiping && touchDuration < 250) {
+                if (this.game.rotate(1)) {
+                    this.audio.playRotate();
+                    this.triggerHaptic(15);
+                    this.updateUI();
+                    this.render();
+                }
+            }
+        }, { passive: true });
+    }
+
     bindTouchButton(id, action) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -814,10 +886,14 @@ class TetrisApp {
         const start = (e) => {
             e.preventDefault();
             if (this.isCountingDown) return;
+            this.triggerHaptic(15);
             action();
             timeout = setTimeout(() => {
                 interval = setInterval(() => {
-                    if (!this.isCountingDown) action();
+                    if (!this.isCountingDown) {
+                        this.triggerHaptic(10);
+                        action();
+                    }
                 }, 75);
             }, 200);
         };
@@ -839,4 +915,7 @@ class TetrisApp {
 // Instantiate on DOM load
 window.addEventListener('DOMContentLoaded', () => {
     window.app = new TetrisApp();
+    if (window.app.initTouchGestures) {
+        window.app.initTouchGestures();
+    }
 });

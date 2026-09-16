@@ -681,57 +681,177 @@ body::after {
     font-weight: 700;
 }
 
-/* Media Queries for Responsiveness */
+/* Media Queries for Mobile Responsiveness */
 @media (max-width: 768px) {
+    html, body {
+        height: 100%;
+        max-height: 100dvh;
+        overflow: hidden;
+        overscroll-behavior: none;
+        touch-action: manipulation;
+    }
+
     body {
-        padding: 8px;
-        justify-content: flex-start;
+        padding: max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom)) 6px;
+        justify-content: space-between;
     }
 
     .app-header {
-        margin-bottom: 8px;
+        margin-bottom: 4px;
+        max-width: 100%;
+        padding: 0 4px;
+    }
+
+    .logo-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.95rem;
     }
 
     .logo-title {
-        font-size: 1.4rem;
+        font-size: 1.25rem;
+        letter-spacing: 2px;
+    }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+        border-radius: 8px;
     }
 
     .game-container {
-        gap: 8px;
+        gap: 6px;
         align-items: center;
+        justify-content: center;
+        flex: 1;
+        max-height: calc(100dvh - 225px);
+        width: 100%;
     }
 
     .side-panel {
-        width: 80px;
-        gap: 8px;
+        width: 70px;
+        gap: 6px;
+        flex-shrink: 0;
     }
 
     .panel-card {
-        padding: 8px;
+        padding: 6px 4px;
         border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 
     .panel-title {
-        font-size: 0.6rem;
+        font-size: 0.55rem;
         letter-spacing: 1px;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
 
     .stat-value {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     .mini-canvas {
-        transform: scale(0.85);
+        width: 48px;
+        height: 48px;
+        transform: scale(0.75);
         transform-origin: center;
+        margin: -4px 0;
+    }
+
+    .next-queue-container {
+        gap: 2px;
     }
 
     .board-container {
-        padding: 6px;
+        padding: 4px;
         border-radius: 12px;
+        max-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
+    #tetrisCanvas {
+        max-height: calc(100dvh - 240px);
+        width: auto;
+        aspect-ratio: 10/20;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    /* Mobile Controls Layout */
     .mobile-controls {
         display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+        gap: 8px;
+        width: 100%;
+        max-width: 480px;
+        margin-top: 4px;
+        padding: 0 4px;
+    }
+
+    .dpad-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: 46px 46px;
+        gap: 6px;
+        flex: 1;
+    }
+
+    .actions-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: 46px 46px;
+        gap: 6px;
+        flex: 1;
+    }
+
+    .touch-btn {
+        border-radius: 10px;
+        font-size: 1.1rem;
+        padding: 2px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        backdrop-filter: blur(8px);
+    }
+
+    .touch-btn span {
+        font-size: 0.55rem;
+        margin-top: 1px;
+    }
+
+    .btn-harddrop {
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        font-weight: 900;
+        background: linear-gradient(135deg, rgba(255, 0, 127, 0.35), rgba(0, 240, 255, 0.35));
+        border-color: var(--accent-magenta);
+    }
+}
+
+@media (max-width: 380px) {
+    .side-panel {
+        width: 60px;
+    }
+
+    .panel-card {
+        padding: 4px 2px;
+    }
+
+    .logo-title {
+        font-size: 1.05rem;
+    }
+
+    .mini-canvas {
+        width: 40px;
+        height: 40px;
+        transform: scale(0.65);
+    }
+
+    .dpad-container, .actions-container {
+        grid-template-rows: 42px 42px;
+        gap: 4px;
     }
 }
