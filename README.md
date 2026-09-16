@@ -45,13 +45,3 @@ Game web Tetris modern, responsif, dan kaya fitur yang dibangun menggunakan **HT
 | **Ulangi Permainan (Restart)** | `R` |
 
 ---
-
-## 🚀 Cara Menjalankan
-
-Cukup buka file `index.html` di browser favorit Anda (Google Chrome, Microsoft Edge, Brave, Firefox, Safari) atau gunakan live server lokal:
-
-```bash
-# Opsi 1: Buka langsung file index.html di browser
-# Opsi 2: Jalankan simple http-server / live-server
-npx -y serve .
-```
