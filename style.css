@@ -681,177 +681,297 @@ body::after {
     font-weight: 700;
 }
 
-/* Media Queries for Mobile Responsiveness */
+/* ==========================================================================
+   Comprehensive Mobile & Tablet Responsive Layout
+   ========================================================================== */
+
 @media (max-width: 768px) {
     html, body {
-        height: 100%;
-        max-height: 100dvh;
-        overflow: hidden;
-        overscroll-behavior: none;
+        width: 100%;
+        min-height: 100%;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior-y: none;
         touch-action: manipulation;
     }
 
     body {
-        padding: max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom)) 6px;
+        padding: max(6px, env(safe-area-inset-top)) 6px max(8px, env(safe-area-inset-bottom)) 6px;
         justify-content: space-between;
+        gap: 4px;
     }
 
+    /* Compact Header */
     .app-header {
-        margin-bottom: 4px;
+        margin-bottom: 2px;
         max-width: 100%;
         padding: 0 4px;
-    }
-
-    .logo-icon {
-        width: 28px;
-        height: 28px;
-        font-size: 0.95rem;
-    }
-
-    .logo-title {
-        font-size: 1.25rem;
-        letter-spacing: 2px;
-    }
-
-    .btn-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-        border-radius: 8px;
-    }
-
-    .game-container {
-        gap: 6px;
-        align-items: center;
-        justify-content: center;
-        flex: 1;
-        max-height: calc(100dvh - 225px);
-        width: 100%;
-    }
-
-    .side-panel {
-        width: 70px;
-        gap: 6px;
         flex-shrink: 0;
     }
 
+    .logo-container {
+        gap: 8px;
+    }
+
+    .logo-icon {
+        width: 26px;
+        height: 26px;
+        font-size: 0.9rem;
+        border-radius: 6px;
+    }
+
+    .logo-title {
+        font-size: 1.15rem;
+        letter-spacing: 1.5px;
+    }
+
+    .header-actions {
+        gap: 6px;
+    }
+
+    .btn-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+        border-radius: 8px;
+    }
+
+    /* Main Container */
+    .game-container {
+        display: flex;
+        flex-direction: row;
+        gap: 6px;
+        align-items: center;
+        justify-content: center;
+        flex: 1 1 auto;
+        width: 100%;
+        max-width: 100%;
+        margin: auto 0;
+        min-height: 0;
+    }
+
+    /* Compact Symmetrical Side Panels */
+    .side-panel {
+        width: 68px;
+        gap: 5px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
     .panel-card {
-        padding: 6px 4px;
-        border-radius: 10px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        padding: 5px 3px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        margin: 0;
     }
 
     .panel-title {
-        font-size: 0.55rem;
-        letter-spacing: 1px;
+        font-size: 0.52rem;
+        letter-spacing: 0.8px;
         margin-bottom: 2px;
     }
 
     .stat-value {
-        font-size: 0.95rem;
+        font-size: 0.88rem;
     }
 
     .mini-canvas {
-        width: 48px;
-        height: 48px;
-        transform: scale(0.75);
+        width: 44px;
+        height: 44px;
+        transform: scale(0.72);
         transform-origin: center;
         margin: -4px 0;
     }
 
-    .next-queue-container {
-        gap: 2px;
+    /* Hide extra next pieces on small screens to keep height compact */
+    #nextCanvas2, #nextCanvas3 {
+        display: none !important;
     }
 
+    .next-queue-container {
+        gap: 0;
+    }
+
+    /* Board & Canvas Scaling */
     .board-container {
         padding: 4px;
         border-radius: 12px;
-        max-height: 100%;
+        flex: 0 1 auto;
+        max-height: 50dvh;
+        max-width: calc(100vw - 156px);
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), var(--glow-shadow);
     }
 
     #tetrisCanvas {
-        max-height: calc(100dvh - 240px);
+        height: 100%;
+        max-height: 48dvh;
+        max-width: 100%;
         width: auto;
         aspect-ratio: 10/20;
         object-fit: contain;
         border-radius: 8px;
+        display: block;
     }
 
-    /* Mobile Controls Layout */
+    /* Floating Alert */
+    .floating-alert {
+        font-size: 1.25rem;
+    }
+
+    .countdown-text {
+        font-size: 3.5rem;
+    }
+
+    .countdown-text.go {
+        font-size: 3rem;
+    }
+
+    /* Ergonomic Dual-Thumb Mobile Gamepad */
     .mobile-controls {
         display: flex;
         justify-content: space-between;
         align-items: stretch;
         gap: 8px;
         width: 100%;
-        max-width: 480px;
-        margin-top: 4px;
-        padding: 0 4px;
+        max-width: 440px;
+        margin-top: 2px;
+        padding: 0 2px;
+        flex-shrink: 0;
     }
 
     .dpad-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: 46px 46px;
-        gap: 6px;
+        grid-template-rows: 44px 44px;
+        gap: 5px;
         flex: 1;
     }
 
     .actions-container {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: 46px 46px;
-        gap: 6px;
+        grid-template-rows: 44px 44px;
+        gap: 5px;
         flex: 1;
     }
 
     .touch-btn {
         border-radius: 10px;
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         padding: 2px;
         border: 1px solid var(--border-color);
         background: var(--bg-card);
         backdrop-filter: blur(8px);
+        min-height: 40px;
     }
 
     .touch-btn span {
-        font-size: 0.55rem;
+        font-size: 0.52rem;
         margin-top: 1px;
     }
 
     .btn-harddrop {
-        font-size: 0.8rem;
+        font-size: 0.72rem;
         letter-spacing: 1px;
         font-weight: 900;
-        background: linear-gradient(135deg, rgba(255, 0, 127, 0.35), rgba(0, 240, 255, 0.35));
+        background: linear-gradient(135deg, rgba(255, 0, 127, 0.4), rgba(0, 240, 255, 0.4));
         border-color: var(--accent-magenta);
+    }
+
+    /* Modals on Mobile */
+    .modal-dialog {
+        width: 92%;
+        max-width: 360px;
+        padding: 20px 16px;
+        border-radius: 16px;
+        gap: 14px;
+    }
+
+    .modal-title {
+        font-size: 1.3rem;
+    }
+
+    .modal-stats {
+        padding: 10px 12px;
+        gap: 6px;
+    }
+
+    .modal-stat-row {
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        padding: 12px 16px;
+        font-size: 0.9rem;
     }
 }
 
-@media (max-width: 380px) {
+/* Extra small devices (iPhone SE, small Androids < 360px) */
+@media (max-width: 360px) {
     .side-panel {
-        width: 60px;
+        width: 58px;
+        gap: 3px;
     }
 
     .panel-card {
-        padding: 4px 2px;
+        padding: 3px 2px;
     }
 
     .logo-title {
-        font-size: 1.05rem;
+        font-size: 0.95rem;
     }
 
-    .mini-canvas {
-        width: 40px;
-        height: 40px;
-        transform: scale(0.65);
+    .stat-value {
+        font-size: 0.78rem;
+    }
+
+    .board-container {
+        max-width: calc(100vw - 130px);
     }
 
     .dpad-container, .actions-container {
-        grid-template-rows: 42px 42px;
-        gap: 4px;
+        grid-template-rows: 40px 40px;
+        gap: 3px;
+    }
+}
+
+/* Landscape Mode for Mobile Phones */
+@media (max-height: 520px) and (orientation: landscape) {
+    body {
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 4px 12px;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .app-header {
+        width: 100%;
+        margin-bottom: 2px;
+    }
+
+    .game-container {
+        flex: 0 0 auto;
+        max-height: 82dvh;
+    }
+
+    .board-container {
+        max-height: 80dvh;
+    }
+
+    #tetrisCanvas {
+        max-height: 78dvh;
+    }
+
+    .mobile-controls {
+        flex: 0 0 280px;
+        margin-top: 0;
+        align-self: center;
     }
 }
