@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Modern Cyberpunk Tetris Web Game - Nikmati pengalaman bermain Tetris klasik dengan visual neon futuristik, efek suara sintetis, dan kontrol responsif.">
+    <title>CYBER TETRIS - Modern Arcade Web Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="cyberpunk">
+    <!-- Top Header -->
+    <header class="app-header">
+        <div class="logo-container">
+            <div class="logo-icon">T</div>
+            <h1 class="logo-title">CYBER TETRIS</h1>
+        </div>
+        <div class="header-actions">
+            <button id="btnPause" class="btn-icon" title="Pause / Jeda Game (P)" aria-label="Pause">⏸️</button>
+            <button id="btnSettings" class="btn-icon" title="Pengaturan (Settings)" aria-label="Settings">⚙️</button>
+            <button id="btnHelp" class="btn-icon" title="Petunjuk & Kontrol" aria-label="Help">❓</button>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="game-container">
+        <!-- Left Side Panel: Hold & Stats -->
+        <aside class="side-panel">
+            <div class="panel-card" id="holdCard" style="cursor: pointer;" title="Klik untuk Tukar Simpanan Balok (C / Shift)">
+                <div class="panel-title">HOLD ⇄</div>
+                <canvas id="holdCanvas" class="mini-canvas"></canvas>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">LEVEL</div>
+                <div id="levelDisplay" class="stat-value highlight">1</div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">LINES</div>
+                <div id="linesDisplay" class="stat-value">0</div>
+            </div>
+        </aside>
+
+        <!-- Center: Game Board Canvas -->
+        <section class="board-container">
+            <div id="floatingAlert" class="floating-alert">TETRIS!</div>
+            <div id="countdownOverlay" class="countdown-overlay">
+                <div id="countdownText" class="countdown-text">3</div>
+            </div>
+            <canvas id="tetrisCanvas"></canvas>
+        </section>
+
+        <!-- Right Side Panel: Next Queue & Score -->
+        <aside class="side-panel">
+            <div class="panel-card">
+                <div class="panel-title">NEXT</div>
+                <div class="next-queue-container">
+                    <canvas id="nextCanvas1" class="mini-canvas"></canvas>
+                    <canvas id="nextCanvas2" class="mini-canvas"></canvas>
+                    <canvas id="nextCanvas3" class="mini-canvas"></canvas>
+                </div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">SCORE</div>
+                <div id="scoreDisplay" class="stat-value highlight">0</div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">BEST</div>
+                <div id="highScoreDisplay" class="stat-value">0</div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Mobile Virtual Controls -->
+    <nav class="mobile-controls" aria-label="Kontrol Layar Sentuh Mobile">
+        <div class="dpad-container">
+            <button id="btnTouchLeft" class="touch-btn">◀ <span>Kiri</span></button>
+            <button id="btnTouchDown" class="touch-btn">▼ <span>Turun</span></button>
+            <button id="btnTouchRight" class="touch-btn">▶ <span>Kanan</span></button>
+            <button id="btnTouchHardDrop" class="touch-btn btn-harddrop">⤓ HARD DROP</button>
+        </div>
+        <div class="actions-container">
+            <button id="btnTouchRotateCCW" class="touch-btn">↺ <span>Putar Kiri</span></button>
+            <button id="btnTouchRotateCW" class="touch-btn">↻ <span>Putar Kanan</span></button>
+            <button id="btnTouchHold" class="touch-btn" style="grid-column: 1 / -1;">📥 <span>HOLD PIECE</span></button>
+        </div>
+    </nav>
+
+    <!-- Start Game Modal -->
+    <div id="startModal" class="modal-overlay">
+        <div class="modal-dialog">
+            <h2 class="modal-title">CYBER TETRIS</h2>
+            <div class="modal-stats">
+                <div class="modal-stat-row">
+                    <span>Mekanisme:</span>
+                    <span>Standard SRS 7-Bag</span>
+                </div>
+                <div class="modal-stat-row">
+                    <span>Efek:</span>
+                    <span>Neon Glow + Particles</span>
+                </div>
+                <div class="modal-stat-row">
+                    <span>Audio:</span>
+                    <span>Web Audio Synthesizer</span>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="btnStartGame" class="btn-primary">▶ MULAI BERMAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Modal -->
+    <div id="pauseModal" class="modal-overlay">
+        <div class="modal-dialog">
+            <h2 class="modal-title">GAME DIJEDA</h2>
+            <div class="modal-buttons">
+                <button id="btnResume" class="btn-primary">LANJUTKAN</button>
+                <button id="btnRestartPause" class="btn-secondary">ULANGI DARI AWAL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="modal-overlay">
+        <div class="modal-dialog">
+            <h2 class="modal-title danger">GAME OVER</h2>
+            <div class="modal-stats">
+                <div class="modal-stat-row">
+                    <span>Skor Akhir:</span>
+                    <span id="finalScore">0</span>
+                </div>
+                <div class="modal-stat-row">
+                    <span>Total Baris (Lines):</span>
+                    <span id="finalLines">0</span>
+                </div>
+                <div class="modal-stat-row">
+                    <span>Level Tercapai:</span>
+                    <span id="finalLevel">1</span>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="btnRestartGameOver" class="btn-primary">MAIN LAGI</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-dialog">
+            <h2 class="modal-title">PENGATURAN</h2>
+            <div class="setting-item">
+                <span class="setting-label">Tema Visual:</span>
+                <div class="setting-control">
+                    <select id="themeSelect">
+                        <option value="cyberpunk">Cyberpunk Neon</option>
+                        <option value="retro">Retro 80s Synth</option>
+                        <option value="ocean">Midnight Ocean</option>
+                        <option value="pastel">Pastel Kawaii</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Ghost Piece (Bayangan):</span>
+                <div class="setting-control">
+                    <input type="checkbox" id="ghostToggle" checked>
+                </div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Tukar Balok Bebas (Swap Kapan Saja):</span>
+                <div class="setting-control">
+                    <input type="checkbox" id="unlimitedHoldToggle" checked>
+                </div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Screen Shake (Getaran):</span>
+                <div class="setting-control">
+                    <input type="checkbox" id="shakeToggle" checked>
+                </div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Musik Latar (BGM):</span>
+                <div class="setting-control">
+                    <input type="checkbox" id="bgmToggle" checked>
+                </div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Volume BGM:</span>
+                <div class="setting-control">
+                    <input type="range" id="bgmVolume" min="0" max="1" step="0.05" value="0.35">
+                </div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Volume Efek (SFX):</span>
+                <div class="setting-control">
+                    <input type="range" id="sfxVolume" min="0" max="1" step="0.05" value="0.6">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="btnCloseSettings" class="btn-primary">SIMPAN & TUTUP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help & Keybindings Modal -->
+    <div id="helpModal" class="modal-overlay">
+        <div class="modal-dialog">
+            <h2 class="modal-title">KONTROL GAME</h2>
+            <div class="keybind-list">
+                <div class="keybind-row">
+                    <span>Geser Balok Kiri / Kanan:</span>
+                    <span class="key-badge">◄ / ► atau A / D</span>
+                </div>
+                <div class="keybind-row">
+                    <span>Putar Balok (Searah Jarum Jam):</span>
+                    <span class="key-badge">▲ atau W / X</span>
+                </div>
+                <div class="keybind-row">
+                    <span>Putar Balok (Berlawanan):</span>
+                    <span class="key-badge">Z</span>
+                </div>
+                <div class="keybind-row">
+                    <span>Soft Drop (Jatuh Pelan):</span>
+                    <span class="key-badge">▼ atau S</span>
+                </div>
+                <div class="keybind-row">
+                    <span>Hard Drop (Langsung Kunci):</span>
+                    <span class="key-badge">SPASI</span>
+                </div>
+                <div class="keybind-row">
+                    <span>Hold Piece (Simpan Balok):</span>
+                    <span class="key-badge">C atau SHIFT</span>
+                </div>
+                <div class="keybind-row">
+                    <span>Jeda / Pause:</span>
+                    <span class="key-badge">P atau ESC</span>
+                </div>
+                <div class="keybind-row">
+                    <span>Restart Game:</span>
+                    <span class="key-badge">R</span>
+                </div>
+            </div>
+            <div class="modal-buttons" style="margin-top: 10px;">
+                <button id="btnCloseHelp" class="btn-primary">MENGERTI</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="audio.js"></script>
+    <script src="tetris.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
