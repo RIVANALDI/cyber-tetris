@@ -69,46 +69,59 @@
         </aside>
     </main>
 
-    <!-- Mobile Cyber Arcade Gamepad -->
-    <nav class="mobile-controls" aria-label="Kontrol Gamepad Sentuh Mobile">
-        <!-- Left Thumb: Directional D-Pad -->
-        <div class="pad-cluster dpad-cluster">
-            <button id="btnTouchLeft" class="touch-btn btn-dpad btn-left" aria-label="Gerak Kiri">
-                <span class="btn-icon-glyph">◀</span>
-                <span class="btn-subtext">KIRI</span>
+    <!-- Mobile Virtual Controls -->
+    <nav class="mobile-controls" aria-label="Kontrol Layar Sentuh Mobile">
+        <!-- Center top action bar -->
+        <div class="gamepad-top-bar">
+            <button id="btnTouchHardDrop" class="touch-btn btn-harddrop">
+                <span class="btn-icon-large">⤓</span>
+                <span class="btn-label">HARD DROP</span>
             </button>
-            <button id="btnTouchDown" class="touch-btn btn-dpad btn-down" aria-label="Turun Cepat">
-                <span class="btn-icon-glyph">▼</span>
-                <span class="btn-subtext">TURUN</span>
-            </button>
-            <button id="btnTouchRight" class="touch-btn btn-dpad btn-right" aria-label="Gerak Kanan">
-                <span class="btn-icon-glyph">▶</span>
-                <span class="btn-subtext">KANAN</span>
+            <button id="btnTouchHold" class="touch-btn btn-hold">
+                <span class="btn-icon-large">⇄</span>
+                <span class="btn-label">HOLD</span>
             </button>
         </div>
+        <!-- D-Pad + Action Buttons Row -->
+        <div class="gamepad-bottom-row">
+            <!-- Left: D-Pad Cross -->
+            <div class="dpad-cross">
+                <div class="dpad-row dpad-row-top">
+                    <button id="btnTouchUp" class="touch-btn dpad-btn dpad-up" aria-label="Putar">
+                        <span class="btn-icon-large">↻</span>
+                    </button>
+                </div>
+                <div class="dpad-row dpad-row-mid">
+                    <button id="btnTouchLeft" class="touch-btn dpad-btn dpad-left" aria-label="Kiri">
+                        <span class="btn-icon-large">◀</span>
+                    </button>
+                    <div class="dpad-center"></div>
+                    <button id="btnTouchRight" class="touch-btn dpad-btn dpad-right" aria-label="Kanan">
+                        <span class="btn-icon-large">▶</span>
+                    </button>
+                </div>
+                <div class="dpad-row dpad-row-bot">
+                    <button id="btnTouchDown" class="touch-btn dpad-btn dpad-down" aria-label="Turun">
+                        <span class="btn-icon-large">▼</span>
+                    </button>
+                </div>
+            </div>
 
-        <!-- Center Quick Drop Bar -->
-        <div class="pad-cluster center-cluster">
-            <button id="btnTouchHardDrop" class="touch-btn btn-harddrop" aria-label="Hard Drop Langsung Kunci">
-                <span class="btn-icon-glyph">⚡ DROP</span>
-                <span class="btn-subtext">KUNCI</span>
-            </button>
-        </div>
-
-        <!-- Right Thumb: Action Cluster (Rotate & Hold) -->
-        <div class="pad-cluster action-cluster">
-            <button id="btnTouchHold" class="touch-btn btn-action btn-hold" aria-label="Hold / Tukar Simpanan Balok">
-                <span class="btn-icon-glyph">📥</span>
-                <span class="btn-subtext">HOLD</span>
-            </button>
-            <button id="btnTouchRotateCCW" class="touch-btn btn-action btn-rot-ccw" aria-label="Putar Berlawanan Jarum Jam">
-                <span class="btn-icon-glyph">↺</span>
-                <span class="btn-subtext">PUTAR L</span>
-            </button>
-            <button id="btnTouchRotateCW" class="touch-btn btn-action btn-rot-cw" aria-label="Putar Searah Jarum Jam">
-                <span class="btn-icon-glyph">↻</span>
-                <span class="btn-subtext">PUTAR R</span>
-            </button>
+            <!-- Right: Action Buttons -->
+            <div class="action-buttons">
+                <div class="action-row action-row-top">
+                    <button id="btnTouchRotateCCW" class="touch-btn action-btn btn-ccw" aria-label="Putar Kiri">
+                        <span class="btn-icon-large">↺</span>
+                        <span class="btn-label">CCW</span>
+                    </button>
+                </div>
+                <div class="action-row action-row-bot">
+                    <button id="btnTouchRotateCW" class="touch-btn action-btn btn-cw" aria-label="Putar Kanan">
+                        <span class="btn-icon-large">↻</span>
+                        <span class="btn-label">CW</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </nav>
 

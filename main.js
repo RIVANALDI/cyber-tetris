@@ -652,6 +652,11 @@ class TetrisApp {
             this.audio.playHardDrop();
             this.handlePieceLock();
         });
+        // D-Pad up button also rotates CW (same as ArrowUp)
+        this.bindTouchButton('btnTouchUp', () => {
+            if (this.game.rotate(1)) this.audio.playRotate();
+            this.updateUI();
+        });
         this.bindTouchButton('btnTouchRotateCW', () => {
             if (this.game.rotate(1)) this.audio.playRotate();
             this.updateUI();
