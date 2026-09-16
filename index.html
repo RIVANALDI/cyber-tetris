@@ -69,61 +69,53 @@
         </aside>
     </main>
 
-    <!-- Mobile Virtual Controls -->
-    <nav class="mobile-controls" aria-label="Kontrol Layar Sentuh Mobile">
-        <!-- Center top action bar -->
-        <div class="gamepad-top-bar">
-            <button id="btnTouchHardDrop" class="touch-btn btn-harddrop">
-                <span class="btn-icon-large">⤓</span>
-                <span class="btn-label">HARD DROP</span>
-            </button>
-            <button id="btnTouchHold" class="touch-btn btn-hold">
-                <span class="btn-icon-large">⇄</span>
-                <span class="btn-label">HOLD</span>
-            </button>
-        </div>
-        <!-- D-Pad + Action Buttons Row -->
-        <div class="gamepad-bottom-row">
-            <!-- Left: D-Pad Cross -->
-            <div class="dpad-cross">
-                <div class="dpad-row dpad-row-top">
-                    <button id="btnTouchUp" class="touch-btn dpad-btn dpad-up" aria-label="Putar">
-                        <span class="btn-icon-large">↻</span>
-                    </button>
-                </div>
-                <div class="dpad-row dpad-row-mid">
-                    <button id="btnTouchLeft" class="touch-btn dpad-btn dpad-left" aria-label="Kiri">
-                        <span class="btn-icon-large">◀</span>
-                    </button>
-                    <div class="dpad-center"></div>
-                    <button id="btnTouchRight" class="touch-btn dpad-btn dpad-right" aria-label="Kanan">
-                        <span class="btn-icon-large">▶</span>
-                    </button>
-                </div>
-                <div class="dpad-row dpad-row-bot">
-                    <button id="btnTouchDown" class="touch-btn dpad-btn dpad-down" aria-label="Turun">
-                        <span class="btn-icon-large">▼</span>
-                    </button>
-                </div>
-            </div>
 
-            <!-- Right: Action Buttons -->
-            <div class="action-buttons">
-                <div class="action-row action-row-top">
-                    <button id="btnTouchRotateCCW" class="touch-btn action-btn btn-ccw" aria-label="Putar Kiri">
-                        <span class="btn-icon-large">↺</span>
-                        <span class="btn-label">CCW</span>
-                    </button>
-                </div>
-                <div class="action-row action-row-bot">
-                    <button id="btnTouchRotateCW" class="touch-btn action-btn btn-cw" aria-label="Putar Kanan">
-                        <span class="btn-icon-large">↻</span>
-                        <span class="btn-label">CW</span>
-                    </button>
-                </div>
+    <!-- Mobile Floating HUD (gesture-only mode, shown on small screens) -->
+    <div class="mobile-hud" id="mobileHud" aria-hidden="true">
+        <!-- Top-left: Hold + Stats -->
+        <div class="hud-left">
+            <div class="hud-card hud-hold" id="hudHoldCard" title="Long press canvas = Hold Piece">
+                <div class="hud-label">HOLD</div>
+                <canvas id="hudHoldCanvas" class="hud-mini-canvas"></canvas>
+            </div>
+            <div class="hud-stat">
+                <div class="hud-label">LVL</div>
+                <div id="hudLevel" class="hud-value hud-highlight">1</div>
+            </div>
+            <div class="hud-stat">
+                <div class="hud-label">LINES</div>
+                <div id="hudLines" class="hud-value">0</div>
             </div>
         </div>
-    </nav>
+
+        <!-- Top-right: Next + Score -->
+        <div class="hud-right">
+            <div class="hud-card hud-next">
+                <div class="hud-label">NEXT</div>
+                <canvas id="hudNextCanvas" class="hud-mini-canvas"></canvas>
+            </div>
+            <div class="hud-stat">
+                <div class="hud-label">SCORE</div>
+                <div id="hudScore" class="hud-value hud-highlight">0</div>
+            </div>
+            <div class="hud-stat">
+                <div class="hud-label">BEST</div>
+                <div id="hudBest" class="hud-value">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Gesture Hint (shown briefly on first play) -->
+    <div class="gesture-hint" id="gestureHint" aria-hidden="true">
+        <div class="gesture-hint-inner">
+            <div class="gh-row"><span class="gh-icon">👆 Tap</span><span class="gh-desc">Putar Balok ↻</span></div>
+            <div class="gh-row"><span class="gh-icon">👆👆 2x Tap</span><span class="gh-desc">Hard Drop ⤓</span></div>
+            <div class="gh-row"><span class="gh-icon">← Swipe</span><span class="gh-desc">Gerak Kiri / Kanan</span></div>
+            <div class="gh-row"><span class="gh-icon">↓ Swipe</span><span class="gh-desc">Soft Drop</span></div>
+            <div class="gh-row"><span class="gh-icon">↑ Swipe</span><span class="gh-desc">Putar ↺ (CCW)</span></div>
+            <div class="gh-row"><span class="gh-icon">⏸ Tahan</span><span class="gh-desc">Hold Piece ⇄</span></div>
+        </div>
+    </div>
 
     <!-- Start Game Modal -->
     <div id="startModal" class="modal-overlay">

@@ -13,7 +13,7 @@ class TetrisApp {
         this.game = new TetrisGame(COLS, ROWS);
         this.audio = window.tetrisAudio;
 
-        // Canvases & Contexts
+        // Canvases & Contexts (Desktop panels)
         this.canvas = document.getElementById('tetrisCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.holdCanvas = document.getElementById('holdCanvas');
@@ -24,6 +24,13 @@ class TetrisApp {
         this.nextCtx2 = this.nextCanvas2.getContext('2d');
         this.nextCanvas3 = document.getElementById('nextCanvas3');
         this.nextCtx3 = this.nextCanvas3.getContext('2d');
+
+        // Mobile HUD Canvases
+        this.hudHoldCanvas = document.getElementById('hudHoldCanvas');
+        this.hudHoldCtx = this.hudHoldCanvas ? this.hudHoldCanvas.getContext('2d') : null;
+        this.hudNextCanvas = document.getElementById('hudNextCanvas');
+        this.hudNextCtx = this.hudNextCanvas ? this.hudNextCanvas.getContext('2d') : null;
+        this.isMobile = window.matchMedia('(max-width: 768px)').matches;
 
         // Particle System
         this.particles = [];
@@ -71,6 +78,10 @@ class TetrisApp {
                 c.height = 4 * 20;
             }
         });
+
+        // Init mobile HUD canvases (40x40 display px)
+        if (this.hudHoldCanvas) { this.hudHoldCanvas.width = 80; this.hudHoldCanvas.height = 80; }
+        if (this.hudNextCanvas) { this.hudNextCanvas.width = 80; this.hudNextCanvas.height = 80; }
     }
 
     loadSettings() {
@@ -172,6 +183,9 @@ class TetrisApp {
         this.hideModals();
         this.updateUI();
         this.render();
+
+        // Show gesture hint on first play (mobile only)
+        this.showGestureHint();
 
         this.startCountdown(() => {
             this.game.isPaused = false;
@@ -517,10 +531,37 @@ class TetrisApp {
     // --- UI Helpers ---
 
     updateUI() {
+        // Desktop panel updates
         document.getElementById('scoreDisplay').textContent = this.game.score.toLocaleString();
         document.getElementById('highScoreDisplay').textContent = this.game.highScore.toLocaleString();
         document.getElementById('levelDisplay').textContent = this.game.level;
         document.getElementById('linesDisplay').textContent = this.game.lines;
+
+        // Mobile HUD updates
+        const hudScore = document.getElementById('hudScore');
+        const hudBest = document.getElementById('hudBest');
+        const hudLevel = document.getElementById('hudLevel');
+        const hudLines = document.getElementById('hudLines');
+        if (hudScore) hudScore.textContent = this.game.score.toLocaleString();
+        if (hudBest) hudBest.textContent = this.game.highScore.toLocaleString();
+        if (hudLevel) hudLevel.textContent = this.game.level;
+        if (hudLines) hudLines.textContent = this.game.lines;
+
+        // Draw mobile HUD hold canvas
+        if (this.hudHoldCtx && this.hudHoldCanvas) {
+            this.hudHoldCtx.clearRect(0, 0, this.hudHoldCanvas.width, this.hudHoldCanvas.height);
+            if (this.game.holdPiece) {
+                this.renderMiniPiece(this.hudHoldCtx, this.game.holdPiece, this.hudHoldCanvas.width, this.hudHoldCanvas.height);
+            }
+        }
+
+        // Draw mobile HUD next canvas
+        if (this.hudNextCtx && this.hudNextCanvas) {
+            this.hudNextCtx.clearRect(0, 0, this.hudNextCanvas.width, this.hudNextCanvas.height);
+            if (this.game.nextQueue && this.game.nextQueue.length > 0) {
+                this.renderMiniPiece(this.hudNextCtx, this.game.nextQueue[0], this.hudNextCanvas.width, this.hudNextCanvas.height);
+            }
+        }
     }
 
     triggerShake(intensity = 6) {
@@ -626,12 +667,24 @@ class TetrisApp {
             }
         });
 
-        // Click directly on HOLD Card Panel to swap
+        // Click directly on HOLD Card Panel to swap (desktop)
         const holdCard = document.getElementById('holdCard');
         if (holdCard) {
             holdCard.addEventListener('click', () => {
                 this.triggerHold();
             });
+        }
+
+        // Mobile HUD Hold card tap to swap
+        const hudHoldCard = document.getElementById('hudHoldCard');
+        if (hudHoldCard) {
+            hudHoldCard.addEventListener('click', () => {
+                this.audio.playButtonClick();
+                this.triggerHold();
+            });
+            hudHoldCard.addEventListener('touchstart', (e) => {
+                e.stopPropagation(); // Don't pass to canvas
+            }, { passive: true });
         }
 
         // Touch / Mobile D-Pad & Actions
@@ -817,6 +870,23 @@ class TetrisApp {
         }
     }
 
+    showGestureHint() {
+        const hint = document.getElementById('gestureHint');
+        if (!hint) return;
+        // Only show on mobile
+        if (!window.matchMedia('(max-width: 768px)').matches) return;
+        // Only show first time
+        try { if (localStorage.getItem('tetris_hint_shown')) return; } catch(e){}
+        hint.classList.add('show');
+        // Auto-dismiss after 3.5s or on tap
+        const dismiss = () => {
+            hint.classList.remove('show');
+            try { localStorage.setItem('tetris_hint_shown', '1'); } catch(e){}
+        };
+        this._hintTimer = setTimeout(dismiss, 3500);
+        hint.addEventListener('click', () => { clearTimeout(this._hintTimer); dismiss(); }, { once: true });
+    }
+
     initTouchGestures() {
         if (!this.canvas) return;
 
@@ -824,27 +894,49 @@ class TetrisApp {
         let touchStartY = 0;
         let touchStartTime = 0;
         let isSwiping = false;
+        let lastTapTime = 0;       // For double-tap detection
+        let longPressTimer = null;  // For hold-piece long press
+        const LONG_PRESS_MS = 450;
+        const DBL_TAP_MS   = 280;
+
+        const cancelLongPress = () => {
+            if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+        };
 
         this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
             if (e.touches.length === 1) {
                 const touch = e.touches[0];
                 touchStartX = touch.clientX;
                 touchStartY = touch.clientY;
                 touchStartTime = performance.now();
                 isSwiping = false;
+
+                // Start long-press timer for Hold
+                longPressTimer = setTimeout(() => {
+                    if (!isSwiping && !this.game.isPaused && !this.game.isGameOver && !this.isCountingDown) {
+                        this.triggerHold();
+                        this.triggerHaptic(40);
+                        isSwiping = true; // Prevent tap action after
+                    }
+                }, LONG_PRESS_MS);
             }
-        }, { passive: true });
+        }, { passive: false });
 
         this.canvas.addEventListener('touchmove', (e) => {
-            if (e.touches.length !== 1 || this.game.isPaused || this.game.isGameOver || this.isCountingDown) return;
+            e.preventDefault();
+            if (e.touches.length !== 1 || this.game.isPaused || this.game.isGameOver || this.isCountingDown) {
+                cancelLongPress();
+                return;
+            }
             const touch = e.touches[0];
             const deltaX = touch.clientX - touchStartX;
             const deltaY = touch.clientY - touchStartY;
+            const thresholdX = 22;
+            const thresholdY = 24;
 
-            const thresholdX = 24;
-            const thresholdY = 26;
-
-            if (Math.abs(deltaX) > thresholdX) {
+            if (Math.abs(deltaX) > thresholdX && Math.abs(deltaX) > Math.abs(deltaY)) {
+                cancelLongPress();
                 isSwiping = true;
                 if (deltaX > 0) {
                     if (this.game.moveRight()) this.audio.playMove();
@@ -855,30 +947,56 @@ class TetrisApp {
                 this.updateUI();
                 this.render();
                 touchStartX = touch.clientX;
-            } else if (deltaY > thresholdY) {
+            } else if (deltaY > thresholdY && Math.abs(deltaY) > Math.abs(deltaX)) {
+                // Swipe DOWN → soft drop
+                cancelLongPress();
                 isSwiping = true;
                 if (this.game.softDrop()) this.audio.playSoftDrop();
                 this.triggerHaptic(8);
                 this.updateUI();
                 this.render();
                 touchStartY = touch.clientY;
-            }
-        }, { passive: true });
-
-        this.canvas.addEventListener('touchend', (e) => {
-            if (this.game.isPaused || this.game.isGameOver || this.isCountingDown) return;
-            const touchDuration = performance.now() - touchStartTime;
-
-            // Tap gesture on board -> Rotate Clockwise
-            if (!isSwiping && touchDuration < 250) {
-                if (this.game.rotate(1)) {
+            } else if (deltaY < -thresholdY && Math.abs(deltaY) > Math.abs(deltaX)) {
+                // Swipe UP → rotate CCW
+                cancelLongPress();
+                isSwiping = true;
+                if (this.game.rotate(-1)) {
                     this.audio.playRotate();
                     this.triggerHaptic(15);
                     this.updateUI();
                     this.render();
                 }
+                touchStartY = touch.clientY;
             }
-        }, { passive: true });
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            cancelLongPress();
+            if (this.game.isPaused || this.game.isGameOver || this.isCountingDown) return;
+            const touchDuration = performance.now() - touchStartTime;
+            const now = performance.now();
+
+            if (!isSwiping && touchDuration < 250) {
+                // Check double-tap → Hard Drop
+                if (now - lastTapTime < DBL_TAP_MS) {
+                    lastTapTime = 0;
+                    this.game.hardDrop();
+                    this.audio.playHardDrop();
+                    this.triggerHaptic(30);
+                    this.handlePieceLock();
+                } else {
+                    // Single tap → Rotate CW
+                    lastTapTime = now;
+                    if (this.game.rotate(1)) {
+                        this.audio.playRotate();
+                        this.triggerHaptic(15);
+                        this.updateUI();
+                        this.render();
+                    }
+                }
+            }
+        }, { passive: false });
     }
 
     bindTouchButton(id, action) {
